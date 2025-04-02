@@ -3,64 +3,65 @@
 namespace App\Http\Services;
 
 use App\Models\Announcement;
+use App\Models\Events;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Storage;
 
-class AnnouncementService
+class EventService
 {
-    public function getAllAnnouncements($page = 1, $perPage = 10)
+    public function getAllEvents($page = 1, $perPage = 10)
     {
-        return Announcement::orderBy('created_at', 'desc')->with('user')->paginate($perPage, ['*'], 'page', $page);
+        return Events::orderBy('created_at', 'desc')->with('user')->paginate($perPage, ['*'], 'page', $page);
     }
 
-    public function getAnnouncement($idOrSlug)
+    public function getEvent($idOrSlug)
     {
-        return Announcement::where('id', $idOrSlug)->orWhere('slug', $idOrSlug)->first();
+        return Events::where('id', $idOrSlug)->orWhere('slug', $idOrSlug)->first();
     }
 
-    public function createAnnouncement($data)
+    public function createEvent($data)
     {
         $data['user_id'] = JWTAuth::user()->id;
-        $announcement = Announcement::create($data);
+        $event = Events::create($data);
 //        if (isset($data['image'])) {
-//            $this->updateAnnouncementImage($data['image'], $announcement->id);
+//            $this->updateEventImage($data['image'], $event->id);
 //        }
-        return $announcement;
+        return $event;
     }
 
-    public function updateAnnouncement($data, $idOrSlug)
+    public function updateEvent($data, $idOrSlug)
     {
-        $announcement = Announcement::where('id', $idOrSlug)->orWhere('slug', $idOrSlug)->first();
-        if (!$announcement) {
+        $event = Events::where('id', $idOrSlug)->orWhere('slug', $idOrSlug)->first();
+        if (!$event) {
             return response()->json(null, 404);
         }
-        $announcement->update($data);
+        $event->update($data);
 
 //        if (isset($data['image'])) {
-//            $this->updateAnnouncementImage($data['image'], $idOrSlug);
+//            $this->updateEventImage($data['image'], $idOrSlug);
 //        }
 
-        return $announcement;
+        return $event;
     }
 
-    public function updateAnnouncementImage($base64Image, $idOrSlug)
+    public function updateEventImage($base64Image, $idOrSlug)
     {
         // Retrieve the announcement by ID or slug
-        $announcement = Announcement::where('id', $idOrSlug)->orWhere('slug', $idOrSlug)->first();
+        $event = Events::where('id', $idOrSlug)->orWhere('slug', $idOrSlug)->first();
 
-        if (!$announcement) {
-            return response()->json(['error' => 'Announcement not found.'], 404);
+        if (!$event) {
+            return response()->json(null, 404);
         }
 
         // Define the storage path
-        $storagePath = 'announcements/' . $announcement->id . '.jpg';
+        $storagePath = 'events/' . $event->id . '.jpg';
 
         // If no image is provided, delete the existing image
         if (is_null($base64Image)) {
             if (Storage::disk('public')->exists($storagePath)) {
                 Storage::disk('public')->delete($storagePath);
             }
-            return response()->json(['message' => 'Image deleted successfully.'], 200);
+            return response()->json(null, 200);
         }
 
         // Validate and process the base64 image
@@ -81,28 +82,28 @@ class AnnouncementService
             }
 
             // Store the image
-            $storagePath = 'announcements/' . $announcement->id . '.' . $imageType;
+            $storagePath = 'events/' . $event->id . '.' . $imageType;
             Storage::disk('public')->put($storagePath, $imageData);
 
-            return response()->json(['message' => 'Image updated successfully.'], 200);
+            return response()->json(null, 200);
         } else {
             return response()->json(['error' => 'Invalid base64 image format.'], 400);
         }
     }
 
-    public function deleteAnnouncement($idOrSlug)
+    public function deleteEvent($idOrSlug)
     {
-        $announcement = Announcement::where('id', $idOrSlug)->orWhere('slug', $idOrSlug)->first();
-        if (!$announcement) {
+        $event = Events::where('id', $idOrSlug)->orWhere('slug', $idOrSlug)->first();
+        if (!$event) {
             return response()->json(null, 404);
         }
-        $announcement->delete();
+        $event->delete();
         return response()->json(null, 200);
     }
 
-    public function searchAnnouncement($query, $page = 1, $perPage = 10)
+    public function searchEvent($query, $page = 1, $perPage = 10)
     {
-        return Announcement::where('title', 'like', '%' . $query . '%') ->orWhere('slug', 'like', '%' . $query . '%')->with('user')->orderBy('created_at', 'desc')->paginate($perPage, ['*'], 'page', $page);
+        return Events::where('title', 'like', '%' . $query . '%') ->orWhere('slug', 'like', '%' . $query . '%')->with('user')->orderBy('created_at', 'desc')->paginate($perPage, ['*'], 'page', $page);
     }
 
     public function uploadImage($image)

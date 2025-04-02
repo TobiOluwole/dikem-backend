@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\News;
 use Illuminate\Http\Request;
 use App\Http\Services\NewsService;
+use Illuminate\Validation\Rule;
 
 class NewsController extends Controller
 {
@@ -43,7 +44,7 @@ class NewsController extends Controller
     public function editNews(Request $request, $idOrSlug)
     {
         $request->validate([
-            'slug' => 'nullable|unique:news,slug',
+            'slug' => ['nullable', Rule::unique('news', 'slug')->ignore($request->only('id')['id'])],
             'title' => 'nullable',
             'content' => 'nullable',
             'tags' => 'nullable',
@@ -83,4 +84,4 @@ class NewsController extends Controller
     {
         return $this->newsService->deleteImage($link);
     }
-}   
+}

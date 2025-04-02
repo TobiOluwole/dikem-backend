@@ -30,13 +30,14 @@ class ProjectsController extends Controller
     public function createProject(Request $request)
     {
         $request->validate([
-            'slug' => 'required|unique:news,slug',
+            'slug' => 'required|unique:projects,slug',
             'title' => 'required',
-            'completed' => 'required|boolean',
             'tags' => 'nullable',
+            'completed' => 'required|boolean',
+            'content' => 'nullable',
             'images' => 'nullable',
         ]);
-        return $this->projectsService->createProject($request->only('title', 'content', 'completed', 'images', 'slug'));
+        return $this->projectsService->createProject($request->only('title', 'content', 'completed', 'images', 'slug', 'tags'));
     }
 
     public function editProject(Request $request, $idOrSlug)
@@ -67,7 +68,7 @@ class ProjectsController extends Controller
     public function uploadImage(Request $request)
     {
         $request->validate([
-            'file' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'file' => 'required|image|mimes:jpeg,png,jpg,gif|max:102400',
         ]);
         return $this->projectsService->uploadImage($request->file('file'));
     }
@@ -76,4 +77,4 @@ class ProjectsController extends Controller
     {
         return $this->projectsService->deleteImage($link);
     }
-}   
+}

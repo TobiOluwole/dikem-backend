@@ -5,15 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
-class Announcement extends Model
+class Events extends Model
 {
 
-    protected $fillable = ['slug', 'title', 'content', 'visible', 'user_id', 'images' ];
+    protected $fillable = ['slug', 'title', 'content', 'datetime', 'type', 'user_id', 'images' ];
 
     protected $casts = [
         'title' => 'json',
         'content' => 'json',
-        'visible' => 'boolean',
+        'datetime' => 'datetime',
         'images' => 'json'
     ];
 
@@ -29,9 +29,10 @@ class Announcement extends Model
         return is_array($this->images) && isset($this->images[0]) ? $this->images[0] : null;
     }
 
-
-//    public function getImagesAttribute()
+//    protected function getImageAttribute()
 //    {
-//        return isset($this->images) && is_array($this->images) ? $this->images : [];
+//        return  Storage::disk('public')->exists('events/' . $this->id . '.jpg')
+//                ? asset('storage/events/' . $this->id . '.jpg')
+//                : null;
 //    }
 }

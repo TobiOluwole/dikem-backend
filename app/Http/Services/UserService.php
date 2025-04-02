@@ -2,6 +2,10 @@
 
 namespace App\Http\Services;
 
+use App\Models\Announcement;
+use App\Models\Events;
+use App\Models\News;
+use App\Models\Projects;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Illuminate\Support\Facades\Mail;
@@ -13,6 +17,17 @@ use App\Models\PasswordReset;
 
 class UserService
 {
+    public function getAppInfo()
+    {
+        $toReturn = [];
+        $toReturn['projectCount'] = Projects::count();
+        $toReturn['newsCount'] = News::count();
+        $toReturn['announcementCount'] = Announcement::count();
+        $toReturn['eventCount'] = Events::count();
+        $toReturn['userCount'] = User::count();
+        return response()->json($toReturn);
+    }
+
     public function login(array $data)
     {
         if (!$token = JWTAuth::attempt($data)) {
@@ -41,7 +56,7 @@ class UserService
         }
 
         JWTAuth::setToken($token);
-        
+
         return response()->json(compact('token'), 200)
             ->header('Access-Control-Expose-Headers', 'Authorization')
             ->header('Authorization', "Bearer $token");
@@ -68,7 +83,7 @@ class UserService
 
             $token = Str::random(6);
             $data['token'] = $token;
-            
+
             PasswordReset::where('email', $data['email'])->delete();
             PasswordReset::create([
                 'email' => $data['email'],
@@ -100,7 +115,7 @@ class UserService
 
         // Update user password
         $user = User::where('email', $data['email'])->first();
-        
+
         if (!$user) {
             return response()->json(null, 401);
         }
@@ -125,7 +140,7 @@ class UserService
         if (array_key_exists('name', $data)) {
             $user->name = $data['name'];
         }
-    
+
         if (array_key_exists('email', $data)) {
             $user->email = $data['email'];
         }
@@ -147,5 +162,5 @@ class UserService
     {
         return response()->json(User::all(), 200);
     }
-    
+
 }

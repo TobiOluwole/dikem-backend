@@ -10,6 +10,7 @@ use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\ProjectsController;
 use App\Http\Controllers\SocialsController;
 use App\Http\Controllers\PagesController;
+use App\Http\Controllers\EventController;
 
 Route::group(['prefix' => 'api'], function () {
 
@@ -17,7 +18,6 @@ Route::group(['prefix' => 'api'], function () {
         return response()->json(['message' => 'Hello, World!']);
     });
 
-    Route::get('/app-info', [UserController::class, 'getAppInfo']);
 
     Route::group(['prefix' => 'news'], function () {
         Route::get('/', [NewsController::class, 'getAllNews']);
@@ -26,16 +26,22 @@ Route::group(['prefix' => 'api'], function () {
         Route::get('/{id}', [NewsController::class, 'getNews']);
     });
 
-    Route::group(['prefix' => 'announcements'], function () {
+    Route::group(['prefix' => 'announcement'], function () {
         Route::get('/', [AnnouncementController::class, 'getAllAnnouncements']);
         Route::get('/search', [AnnouncementController::class, 'searchAnnouncement']);
         Route::get('/{id}', [AnnouncementController::class, 'getAnnouncement']);
     });
 
+    Route::group(['prefix' => 'events'], function () {
+        Route::get('/', [EventController::class, 'getAllEvents']);
+        Route::get('/search', [EventController::class, 'searchEvent']);
+        Route::get('/{id}', [EventController::class, 'getEvent']);
+    });
+
     Route::group(['prefix' => 'projects'], function () {
         Route::get('/', [ProjectsController::class, 'getAllProjects']);
         Route::get('/search', [ProjectsController::class, 'searchProjects']);
-        Route::get('/{id}', [ProjectsController::class, 'getProjects']);
+        Route::get('/{id}', [ProjectsController::class, 'getProject']);
     });
 
     Route::group(['prefix' => 'socials'], function(){
@@ -55,6 +61,8 @@ Route::group(['prefix' => 'api'], function () {
 
 
         Route::middleware([JwtMiddleware::class])->group(function () {
+
+            Route::get('/app-info', [UserController::class, 'getAppInfo']);
 
             Route::post('logout', [UserController::class, 'logout']);
             Route::get('refresh-token', [UserController::class, 'refreshToken']);
@@ -82,11 +90,29 @@ Route::group(['prefix' => 'api'], function () {
                 Route::delete('/{idOrSlug}', [NewsController::class, 'deleteNews']);
             });
 
-            Route::group(['prefix' => 'announcements'], function () {
+            Route::group(['prefix' => 'announcement'], function () {
+
+                Route::group(['prefix' => 'image'], function () {
+                    Route::post('/', [AnnouncementController::class, 'uploadImage']);
+                    Route::delete('/{link}', [AnnouncementController::class, 'deleteImage']);
+                });
 
                 Route::put('/', [AnnouncementController::class, 'createAnnouncement']);
                 Route::patch('/{idOrSlug}', [AnnouncementController::class, 'updateAnnouncement']);
                 Route::delete('/{idOrSlug}', [AnnouncementController::class, 'deleteAnnouncement']);
+
+            });
+
+            Route::group(['prefix' => 'events'], function () {
+
+                Route::group(['prefix' => 'image'], function () {
+                    Route::post('/', [EventController::class, 'uploadImage']);
+                    Route::delete('/{link}', [EventController::class, 'deleteImage']);
+                });
+
+                Route::put('/', [EventController::class, 'createEvent']);
+                Route::patch('/{idOrSlug}', [EventController::class, 'updateEvent']);
+                Route::delete('/{idOrSlug}', [EventController::class, 'deleteEvent']);
 
             });
 

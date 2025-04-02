@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class UserController extends Controller
-{   
+{
     private $userService;
 
     public function __construct(UserService $userService)
@@ -20,14 +20,7 @@ class UserController extends Controller
 
     public function getAppInfo()
     {
-        $toReturn = [];
-        $userCount = User::count();
-        $toReturn['userCount'] = $userCount;
-        if (JWTAuth::user()) {
-            $newsCount = News::count();
-            $toReturn['newsCount'] = $newsCount;
-        }
-        return response()->json($toReturn);
+        return $this->userService->getAppInfo();
     }
 
     public function login(Request $request)
@@ -75,7 +68,7 @@ class UserController extends Controller
         $request->validate([
             'name' => 'sometimes|string',
             'email' => 'sometimes|email',
-        ]); 
+        ]);
         return $this->userService->editUser($request->only(['name', 'email']) + ['id' => $id]);
     }
 
@@ -94,5 +87,5 @@ class UserController extends Controller
     public function getAllUsers(){
         return $this->userService->getAllUsers();
     }
-    
+
 }

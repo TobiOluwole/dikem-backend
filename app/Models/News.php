@@ -15,9 +15,9 @@ class News extends Model
         'content' => 'json',
         'visible' => 'boolean'
     ];
-
     protected $appends = [
-        'display_image'
+        'display_image',
+//        'tags'
     ];
 
     public function user()
@@ -27,7 +27,12 @@ class News extends Model
 
     public function getDisplayImageAttribute()
     {
-        return is_array($this->images) ? $this->images[0] : null;
+        return is_array($this->images) && isset($this->images[0]) ? $this->images[0] : [];
     }
+
+//    public function getTagsAttribute()
+//    {
+//        return is_array($this->tags) && isset($this->tags[0]) ? $this->tags : [];
+//    }
 }
 

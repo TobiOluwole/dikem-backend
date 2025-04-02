@@ -22,7 +22,7 @@ class ProjectsService
     {
         $data['user_id'] = JWTAuth::user()->id;
         return Projects::create($data);
-    }   
+    }
 
     public function editProject($data, $idOrSlug)
     {
@@ -52,11 +52,11 @@ class ProjectsService
     public function uploadImage($image)
     {
         $image->store('projects', 'public');
-        return Storage::url('projects/' . $image->hashName());
+        return response()->json(['link' => Storage::url('projects/' . $image->hashName())], 200);
     }
 
     public function deleteImage($link)
-    {         
+    {
         return Storage::disk('public')->delete("projects/$link");
     }
-}   
+}

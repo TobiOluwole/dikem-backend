@@ -9,7 +9,7 @@ class Projects extends Model
     protected $fillable = ['user_id', 'title', 'content', 'completed', 'images', 'slug'];
 
     protected $casts = [
-        'images' => 'array', 
+        'images' => 'array',
         'title' => 'json',
         'content' => 'json',
         'completed' => 'boolean'
@@ -26,7 +26,7 @@ class Projects extends Model
 
     public function getDisplayImageAttribute()
     {
-        return is_array($this->images) ? $this->images[0] : null;
+        return is_array($this->images) && isset($this->images[0]) ? $this->images[0] : null;
     }
 }
 

@@ -64,7 +64,7 @@ class NewsService
     public function uploadImage($image)
     {
         $image->store('news', 'public');
-        return Storage::url('news/' . $image->hashName());
+        return response()->json(['link' => Storage::url('news/' . $image->hashName())], 200);
     }
 
     public function deleteImage($link)

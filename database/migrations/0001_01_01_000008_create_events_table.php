@@ -4,16 +4,17 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateAnnouncementsTable extends Migration
+class CreateEventsTable extends Migration
 {
     public function up()
     {
-        Schema::create('announcements', function (Blueprint $table) {
+        Schema::create('events', function (Blueprint $table) {
             $table->id();
             $table->string('slug')->unique('slug');
             $table->json('title');
             $table->json('content');
-            $table->boolean('visible');
+            $table->timestamp('datetime');
+            $table->string('type')->nullable();
             $table->foreignId('user_id')->constrained('users');
             $table->json('images')->default('[]');
             $table->timestamps();
@@ -22,6 +23,6 @@ class CreateAnnouncementsTable extends Migration
 
     public function down()
     {
-        Schema::dropIfExists('announcements');
+        Schema::dropIfExists('events');
     }
 }
